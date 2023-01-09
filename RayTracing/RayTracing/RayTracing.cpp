@@ -1,10 +1,14 @@
+/*
+code file created by ilyass SABIR
+*/
+
 #include "Color.h"
 #include "Vec3.h"
 #include "Ray.h"
 #include "Sphere.h"
 #include "ImagePPM.h"
-// #include "SphereEnglobant.h"
 #include "Triangle.h"
+#include "Texture.h"
 
 #include <iostream>
 #include <tuple>
@@ -96,8 +100,6 @@ void figure2() {
     Sphere sphere3 = Sphere(Point3(0.5, -0.5, -1.5), 0.8);
     auto color3 = Color(1.0, 1.0, 1.0);
 
-    Sphere sphere4 = Sphere(Point3(-1, 0.5, -1), 0.25);
-    auto color4 = Color(0.0, 0.0, 1.0);
 
     // create Image
     string pathOut = "../images/";
@@ -123,17 +125,13 @@ void figure2() {
             double PImin3 = std::get<0>(intersection3);
             double PImax3 = std::get<1>(intersection3);
 
-            auto intersection4 = sphere4.intersect(r);
-            double PImin4 = std::get<0>(intersection4);
-            double PImax4 = std::get<1>(intersection4);
-
             Color pixel_color;
 
-            if (PImax1 == -1 && PImax2 == -1 && PImax3 == -1 && PImax4 == -1)
+            if (PImax1 == -1 && PImax2 == -1 && PImax3 == -1)
                 pixel_color =  Color(0.0, 0.0, 0.0);
 
             else {
-                double tmax = std::max(PImax1, std::max(PImax2, std::max(PImax3, PImax4)));
+                double tmax = std::max(PImax1, std::max(PImax2, PImax3));
 
                 if (tmax == PImax1)
                     pixel_color = color1;
@@ -141,8 +139,6 @@ void figure2() {
                     pixel_color = color2;
                 else if (tmax == PImax3)
                     pixel_color = color3;
-                else
-                    pixel_color = color4;
             }
             write_color(pixel_color, image2);
         }
@@ -219,12 +215,12 @@ void figure3()
 
                 double CosRayInter = dot(rayonLight, normal);
 
-                double coeff = std::min(1., std::max(0., CosRayInter));
+                double coeff = std::max(0., CosRayInter);
 
                 Color ambientLight = ambience * colorSphere;
-                Color diffuseLight = diffuse * std::max(coeff, 0.) * colorSphere;
+                Color diffuseLight = diffuse * coeff * colorSphere;
                 double shin = pow(std::max(-dot(r.direction(), reflection(rayonLight, normal)), 0.), shininess);
-                Color specularLight = specular * shin * colorSphere;
+                Color specularLight = specular * shin * lightColor;
 
                 pixel_color = ambientLight + diffuseLight + specularLight;
             }
@@ -298,7 +294,6 @@ void figure4()
 
 }
 
-
 void figure5()
 {
     // Image
@@ -319,9 +314,78 @@ void figure5()
 
     // create Image
     string pathOut = "../images/";
-    ImagePPM image5 = ImagePPM(image_width, image_height, pathOut, 5);
+    ImagePPM image6 = ImagePPM(image_width, image_height, pathOut, 6);
 
-    Texture * texture = new Texture("../PNG2PPM/RayTracing/moon1.ppm");
+    // Texture texture = Texture("../PNG2PPM/RayTracing/moon5.ppm");
+
+    // add triangle
+    Point3 P2 = Point3(-1, -0.5, -1);
+    Point3 P1 = Point3(1, -0.5, -1);
+    Point3 P3 = Point3(0, 0.5, -1);
+
+    Triangle triangle = Triangle(P1, P2, P3);
+
+
+    Color lightColor = Color(1.0, 1.0, 1.0);
+
+    for (int j = image_height - 1; j >= 0; --j) {
+        cerr << "\rScanlines remaining: " << j << ' ' << flush;
+        for (int i = 0; i < image_width; ++i) {
+            auto u = double(i) / (image_width - 1);
+            auto v = double(j) / (image_height - 1);
+            Ray r(origin, lower_left_corner + u * horizontal + v * vertical - origin);
+
+            double atInter = triangle.intersection(r);
+
+            Color pixel_color;
+
+            if (atInter > 0)
+            {
+                Point3 intersection = r.at(atInter);
+                // tuple<double, double, double> c = triangle.applyTexture(texture, intersection);
+                tuple<double, double, double> c = triangle.applyTexture(intersection);
+
+                pixel_color = Color(get<0>(c), get<1>(c), get<2>(c));
+            }
+
+            else
+            {
+                pixel_color = Color(0.0, 0.0, 0.0);
+            }
+
+
+            write_color(pixel_color, image6);
+        }
+    }
+    image6.setPixeltoImage();
+
+    cerr << "\nDone.\n";
+
+}
+
+void figure6()
+{
+    // Image
+    const auto aspect_ratio = 16.0 / 9.0;
+    const int image_width = 400;
+    const int image_height = static_cast<int>(image_width / aspect_ratio);
+
+    // Camera
+
+    auto viewport_height = 2.0;
+    auto viewport_width = aspect_ratio * viewport_height;
+    auto focal_length = 1.0;
+
+    auto origin = Point3(0, 0, 0);
+    auto horizontal = Vec3(viewport_width, 0, 0);
+    auto vertical = Vec3(0, viewport_height, 0);
+    auto lower_left_corner = origin - horizontal / 2 - vertical / 2 - Vec3(0, 0, focal_length);
+
+    // create Image
+    string pathOut = "../images/";
+    ImagePPM image5 = ImagePPM(image_width, image_height, pathOut, 7);
+
+    Texture texture = Texture("../PNG2PPM/RayTracing/moon2.ppm");
 
     Sphere sphere1 = Sphere(Point3(0, 0, -1), 0.5);
     Color pixel_color;
@@ -356,8 +420,8 @@ void figure5()
 
             else {
                 Point3 intersection = r.at(PImin1);
-                double color = sphere1.applyTexture(* texture, intersection);
-                Color colorSphere = Color(color, color, color);
+                tuple<double, double, double> color = sphere1.applyTexture(texture, intersection);
+                Color colorSphere = Color(get<0>(color), get<1>(color), get<2>(color));
 
                 Vec3 L = posLight - intersection;
                 Vec3 rayonLight = unit_vector(L);
@@ -380,16 +444,17 @@ void figure5()
     }
     image5.setPixeltoImage();
 
-    delete texture;
-
     cerr << "\nDone.\n";
 
 }
 
+
+
+
 int main() {
 
     int input;
-    cerr << "input the number of figure: 1, 2, 3, 4 or 5." << endl;
+    cerr << "input the number of figure: 1, 2, 3, 4, 5 or 6." << endl;
 
     cin >> input;
 
@@ -415,8 +480,12 @@ int main() {
         figure5();
         break;
 
+    case 6:
+        figure6();
+        break;
+
     default:
-        cerr << "Please inter a number between 1 and 5." << flush;
+        cerr << "Please inter a number between 1 and 6." << flush;
         break;
 
 

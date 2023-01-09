@@ -1,5 +1,5 @@
 /*
-Author: SABIR ILYASS.
+code file created by ilyass SABIR
 */
 
 #ifndef IMAGEPPM_H

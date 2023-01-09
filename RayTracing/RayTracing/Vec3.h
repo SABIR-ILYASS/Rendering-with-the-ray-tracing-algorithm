@@ -93,6 +93,10 @@ inline Vec3 unit_vector(Vec3 v) {
     return v / v.length();
 }
 
+/*
+* function created by SABIR Ilyass
+* the function returns the symmetric vector of u with respect to v in the plane (u,v).
+*/
 inline Vec3 reflection(Vec3 u, Vec3 v)
 {
     double coeff = dot(u, v);

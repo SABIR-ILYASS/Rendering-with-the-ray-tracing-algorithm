@@ -1,3 +1,7 @@
+/* 
+code file adapted by ilyass SABIR 
+*/
+
 #ifndef COLOR_H
 #define COLOR_H
 
@@ -5,6 +9,8 @@
 #include "ImagePPM.h"
 
 #include <iostream>
+
+/* add a color to an image of the class ImagePPM */
 
 void write_color(Color pixel_color, ImagePPM& image) {
     // Write the translated [0,255] value of each color component.

@@ -128,15 +128,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ImagePPM.cpp" />
+    <ClCompile Include="ListSphere.cpp" />
     <ClCompile Include="RayTracing.cpp" />
     <ClCompile Include="Sphere.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Color.h" />
     <ClInclude Include="ImagePPM.h" />
+    <ClInclude Include="ListSphere.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Sphere.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Vec3.h" />
   </ItemGroup>
