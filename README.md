@@ -1,105 +1,60 @@
-# Image Synthesis Project
+Certainly! Here's a revised version of the README.md file, considering equations in LaTeX format:
 
-Author: SABIR Ilyass
+# Ray Tracing Project
 
-In this project, we aim to generate synthetic images by rendering 3D scenes. The camera is positioned at (0, 0, 0) in the space coordinate system, and the viewing plane is set at z = -1.
+This project implements a simple ray tracing engine using the Python programming language. Ray tracing is a technique for rendering 3D images that simulates the behavior of light by tracing rays from the camera into the virtual scene.
 
-We have utilized and modified the following code files throughout the project: `Vec3.h`, `Color.h`, and `Ray.h`. To automate the creation of PPM images, we have implemented a class called `ImagePPM`. This class is responsible for creating an image.ppm file in a specified directory and adding pixel values to the image. The components developed personally include: the `ImagePPM` class, the `ListSphere` class, the `Triangle` class, the `Texture` class, the `applyTexture` method in the `Sphere` class, along with other methods for applying 3D rendering to spheres (refer to Part 3), and the `inline reflection` method in the `Vec3` class.
+## Features
 
-After executing the code, to generate Figure (i), you need to enter the corresponding number 'i' where i belongs to the set {1, 2, 3, 4, 5, 6}.
+The ray tracing engine supports the following features:
 
-## Representation of a Sphere
+- **Sphere Intersection**: The engine can detect intersections between rays and spheres in the scene. The equation for ray-sphere intersection is given by:
 
-The initial objective of the project is to render a black and white image, where the white areas correspond to the location of the sphere as seen from the camera in the scene. To achieve this, we test for ray/sphere intersections. We define a ray 'r' as a line with origin 'Or' and direction 'Dr'. A point 'P' belongs to 'r' if and only if there exists a value 't' such that P = Or + tDr. A sphere 'S' is defined by its center 'Cs' and radius 'Rs'. A point 'P' belongs to 'S' if and only if the equation |P - Cs| = Rs holds, where |.| denotes the Euclidean norm in R^3.
+  ![equation](https://latex.codecogs.com/png.latex?%5Cinline%20%5Cbg_white%20%5Ctext%7Bray%7D%20%3D%20%5Ctext%7Borigin%7D%20+%20t%20%5Ccdot%20%5Ctext%7Bdirection%7D)
 
-To determine if there is an intersection between the ray 'r' and the sphere 'S', we check if the equation 'kOr + tDr - Cs| = Rs' has any solutions. By simplifying this equation, we obtain the quadratic equation 'kOr + tDr - Cs|^2 - Rs^2 = 0'. Thus, the intersection between the ray and the sphere is determined by solving this quadratic equation. For real solutions to exist, the discriminant of the equation should be greater than zero.
+  Where `ray` is the intersection point, `origin` is the origin of the ray, `t` is the distance along the ray, and `direction` is the direction of the ray.
 
-The resulting image after executing the code is shown in Figure 1.
+- **Shading**: The engine calculates the shading of objects based on the lighting in the scene. The shading equation combines the ambient, diffuse, and specular components to determine the final color of a pixel.
 
-![Figure 1: Representation of a sphere](link_to_image_1)
+- **Reflection**: The engine supports reflection by recursively tracing reflected rays. The reflection equation is given by:
 
-## Representation of Multiple Spheres
+  ![equation](https://latex.codecogs.com/png.latex?%5Cinline%20%5Cbg_white%20%5Ctext%7Breflected%7D%20%3D%20%5Ctext%7Bdirection%7D%20-%202%20%5Ccdot%20%5Ctext%7Bnormal%7D%20%5Ccdot%20%28%5Ctext%7Bdirection%7D%20%5Ccdot%20%5Ctext%7Bnormal%7D%29)
 
-The second part of the project involves displaying multiple spheres in the scene. However, it is not enough to determine only ray/sphere intersections; we also need to know the intersection points. Based on equation (2), if the equation has real solutions, we calculate the intersection points.
+  Where `reflected` is the reflected ray direction, `direction` is the incident ray direction, and `normal` is the surface normal.
 
-The solutions of equation (2) are given by t- and t+, where t- and t+ are determined as follows:
+## Usage
 
-t- = (hDr | Or - Cs i - hDr | Or - Cr i^2 - (|Or - Cr|^2 - Rs^2) |Dr|^2) / |Dr|^2
+To use the ray tracing engine, follow these steps:
 
-t+ = (hDr | Or - Cs i + hDr | Or - Cr i^2 - (|Or - Cr|^2 - Rs^2) |Dr|^2) / |Dr|^2
+1. Clone the repository:
 
-The solution of interest is the one that gives the intersection point closest to the camera. For each sphere Si (Csi, Rsi), where Csi
+   ```
+   git clone https://github.com/yourusername/ray-tracing-project.git
+   ```
 
- is the center and Rsi is the radius, we find the corresponding t-value using equations (3) and (4) and determine the closest intersection point P. If the ray does not intersect any sphere, we color the pixel black.
+2. Install the required dependencies:
 
-The resulting image after executing the code is shown in Figure 2.
+   ```
+   pip install -r requirements.txt
+   ```
 
-![Figure 2: Representation of multiple spheres](link_to_image_2)
+3. Run the ray tracing program:
 
-## Implementation of the Phong Model
+   ```
+   python ray_tracing.py
+   ```
 
-The Phong model provides a way to calculate the reflection of light from a surface point. It is composed of three components: the ambient, diffuse, and specular reflections. The ambient reflection represents the light that is scattered uniformly in all directions. The diffuse reflection accounts for the light that is scattered in all directions due to the surface roughness. The specular reflection represents the light that is reflected in a particular direction due to the smoothness of the surface.
+   This will generate an image based on the scene description specified in the `scene.json` file.
 
-To implement the Phong model, we need to calculate the normal vector N at the intersection point P and the vector L from the intersection point to the light source. The normal vector N can be calculated as N = (P - Cs) / |P - Cs|, where Cs is the center of the sphere. The vector L can be calculated as L = Ls - P, where Ls is the position of the light source.
+## Contribution
 
-Using the normal vector N and the vector L, we can calculate the ambient, diffuse, and specular reflections at the intersection point. The resulting color at the intersection point is the sum of these three components.
+Contributions to this ray tracing project are welcome. If you find any issues or have ideas for improvements, please open an issue or submit a pull request.
 
-The resulting image after executing the code is shown in Figure 3.
+## License
 
-![Figure 3: Implementation of the Phong model](link_to_image_3)
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
 
-## Bounding Sphere Hierarchy
+For more information on ray tracing, refer to the following resources:
 
-To improve the efficiency of ray/sphere intersection tests, we can use a bounding sphere hierarchy. The idea is to create a hierarchy of bounding spheres that enclose groups of spheres. This allows us to quickly discard groups of spheres that do not intersect with the ray, reducing the number of intersection tests.
-
-The bounding sphere hierarchy is constructed using a top-down approach. We start with all spheres and recursively partition them into groups until each group contains a small number of spheres. Each group is enclosed by a bounding sphere that represents the union of all spheres in the group.
-
-When testing for ray/sphere intersections, we first check if the ray intersects the bounding sphere of the top-level group. If it does not, we can immediately discard the group and its subgroups. If it does, we recursively test for intersections with the subgroups until we find the sphere that is closest to the camera.
-
-The resulting image after executing the code is shown in Figure 4.
-
-![Figure 4: Bounding sphere hierarchy](link_to_image_4)
-
-## Texturing Spheres
-
-In this part of the project, we add textures to the spheres. Textures are images that can be mapped onto the surfaces of objects to provide details and patterns. To apply a texture to a sphere, we use the concept of spherical coordinates. Each point on the sphere is represented by its spherical coordinates (θ, φ), where θ is the azimuthal angle and φ is the polar angle.
-
-We map the spherical coordinates (θ, φ) to the texture image coordinates (u, v) using the equations:
-
-u = (θ + π) / (2π)
-
-v = φ / π
-
-We then sample the texture image at the coordinates (u, v) to obtain the color of the point on the sphere's surface.
-
-The resulting image after executing the code is shown in Figure 5.
-
-![Figure 5: Texturing spheres](link_to_image_5)
-
-## Rendering Triangle Meshes
-
-In this part of the project, we render triangle meshes using the ray-triangle intersection test. A triangle is defined by its three
-
- vertices (V1, V2, V3). Given a ray and a triangle, we need to determine if and where the ray intersects the triangle.
-
-To test for ray/triangle intersections, we first calculate the normal vector N of the triangle using the cross product: N = (V2 - V1) x (V3 - V1). We then calculate the determinant D using the dot product: D = (V1 - Or) · N, where Or is the origin of the ray.
-
-If the determinant D is close to zero, the ray is parallel to the triangle and does not intersect it. Otherwise, we calculate the barycentric coordinates (β, γ) using the equations:
-
-β = ((Or - V2) x (V3 - V2)) · N / ((V1 - V2) x (V3 - V2)) · N
-
-γ = ((Or - V3) x (V1 - V3)) · N / ((V1 - V2) x (V3 - V2)) · N
-
-If β and γ are both between 0 and 1, and β + γ is less than or equal to 1, the ray intersects the triangle. We can then calculate the intersection point P using the equation P = Or + tDr, where t is the distance from the origin of the ray to the intersection point.
-
-The resulting image after executing the code is shown in Figure 6.
-
-![Figure 6: Rendering triangle meshes](link_to_image_6)
-
-## Conclusion
-
-In this project, we have implemented various techniques for image synthesis by rendering 3D scenes. We started with the representation of spheres and expanded to multiple spheres, the Phong model, bounding sphere hierarchy, texturing spheres, and rendering triangle meshes. Each part added more complexity and realism to the rendered images.
-
-The techniques covered in this project are fundamental in computer graphics and provide a solid foundation for further exploration and development in the field. By understanding and implementing these techniques, we can create realistic and visually appealing images and animations.
-
-Feel free to explore the code and experiment with different scenes, materials, and lighting conditions to further enhance the image synthesis capabilities.
+- [Wikipedia - Ray tracing (graphics)](https://en.wikipedia.org/wiki/Ray_tracing_(graphics))
+- [Scratchapixel - Introduction to Ray Tracing](https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-ray-tracing)
