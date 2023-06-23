@@ -27,7 +27,7 @@ To use the ray tracing engine, follow these steps:
 1. Clone the repository:
 
    ```
-   git clone [https://github.com/yourusername/ray-tracing-project.git](https://github.com/SABIR-ILYASS/Rendering-with-the-ray-tracing-algorithm.git)
+   git clone https://github.com/yourusername/ray-tracing-project.git
    ```
 
 2. Compile the code using a C++ compiler. For example:
